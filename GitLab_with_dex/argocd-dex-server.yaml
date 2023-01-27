@@ -1,0 +1,9 @@
+        volumeMounts:
+        - mountPath: /etc/ssl/certs/
+          name: my-ca
+ [...]
+      volumes:
+      - name: my-ca
+        secret:
+          defaultMode: 420
+          secretName: ca-root
