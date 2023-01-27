@@ -1,0 +1,14 @@
+apiVersion: v1
+data:
+  dex.config: |-
+    connectors:
+      # GitLab
+      - type: gitlab
+        id: gitlab
+        name: GitLab MyOrg
+        config:
+          baseURL: http://git.myorg.com
+          clientID: <GITLAB CLIENT ID>
+          clientSecret: <GITLAB CLIENT SECRET>
+        useLoginAsID: false
+  url: https://argocd.myorg.com
