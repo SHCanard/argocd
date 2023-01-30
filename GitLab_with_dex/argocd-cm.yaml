@@ -16,6 +16,7 @@ data:
         useLoginAsID: false
   url: https://argocd.myorg.com
   # Enables anonymous user access. The anonymous users get default role permissions specified argocd-rbac-cm.yaml.
+    # https://argo-cd.readthedocs.io/en/stable/user-guide/status-badge/
   statusbadge.enabled: "true"
   # Specifies token expiration duration
   users.session.duration: 8h
