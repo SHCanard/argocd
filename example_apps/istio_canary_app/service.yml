@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-stable
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: demo
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-canary
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: demo
+  type: ClusterIP
