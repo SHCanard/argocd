@@ -1,0 +1,65 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: canary-demo
+  labels:
+    app: demo
+spec:
+  strategy:
+    canary:
+      analysis:
+        templates:
+        # name of AnalysisTemplate
+        - templateName: success-rate
+        # when it begins, step 2 = after the first pause
+        startingStep: 2
+        args:
+        - name: service-name
+          # name of the canary service (used in Prometheus to find the correct metrics)
+          value: demo-canary.default.svc.cluster.local
+      steps:
+      # direct 20% of the load to the canary
+      - setWeight: 20
+      # pause 20 seconds
+      - pause: {duration: 20}
+      # direct 50% of the load to the canary
+      - setWeight: 50
+      # pause for 20 seconds
+      - pause: {duration: 20}
+      # no other step, means that 100% of the laod will be directed to the canary
+      canaryService: demo-canary
+      stableService: demo-stable
+      trafficRouting:
+        istio:
+           virtualService: 
+            name: istio-vs
+            routes:
+            - primary 
+  replicas: 4
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+      - name: demo
+        # Switch between images to trigger the rollout at next sync in ArgoCD
+        image: argoproj/rollouts-demo:blue
+        #image: argoproj/rollouts-demo:green
+        #image: argoproj/rollouts-demo:orange
+        imagePullPolicy: Always
+        ports:
+        - name: web
+          containerPort: 8080
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "140m"
