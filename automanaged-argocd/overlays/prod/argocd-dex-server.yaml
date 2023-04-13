@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-dex-server
+spec:
+  template:
+    spec:
+      containers:
+        - command:
+            - /shared/argocd-dex
+            - rundex
+          env:
+            - name: ARGOCD_DEX_SERVER_DISABLE_TLS
+              valueFrom:
+                configMapKeyRef:
+                  key: dexserver.disable.tls
+                  name: argocd-cmd-params-cm
+                  optional: true
+          image: 'ghcr.io/dexidp/dex:v2.35.3'
+          imagePullPolicy: Always
+          name: dex
+          ports:
+            - containerPort: 5556
+              name: 5556tcp
+              protocol: TCP
+            - containerPort: 5557
+              name: 5557tcp
+              protocol: TCP
+            - containerPort: 5558
+              name: 5558tcp
+              protocol: TCP
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /etc/ssl/certs/
+              name: my-ca
+            - mountPath: /shared
+              name: static-files
+            - mountPath: /tmp
+              name: dexconfig
+            - mountPath: /tls
+              name: argocd-dex-server-tls
+      volumes:
+      - name: my-ca
+        secret:
+          defaultMode: 420
+          secretName: ca-root
+      - emptyDir: {}
+        name: static-files
+      - emptyDir: {}
+        name: dexconfig
+      - name: argocd-dex-server-tls
+        secret:
+          defaultMode: 420
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          - key: ca.crt
+            path: ca.crt
+          optional: true
+          secretName: argocd-dex-server-tls
