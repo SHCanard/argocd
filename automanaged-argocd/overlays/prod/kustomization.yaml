@@ -1,0 +1,7 @@
+bases: 
+  - ../../base
+patches:
+  - argocd-cm.yaml
+  - argocd-dex-server.yaml
+  - argocd-rbac-cm.yaml
+  - argocd-cmd-params-cm.yaml
