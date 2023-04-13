@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-grpc-ingress
+  namespace: argocd
+spec:
+  rules:
+  - host: grpc-argocd.domain.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: argocd-server
+            port:
+              name: https
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - grpc-argocd.domain.com
+    secretName: argocd-secret
+status:
+  loadBalancer:
+    ingress:
+    - ip: 10.0.0.1
+    - ip: 10.0.0.2
+    - ip: 10.0.0.3
