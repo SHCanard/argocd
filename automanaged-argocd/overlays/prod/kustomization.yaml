@@ -1,6 +1,8 @@
-bases: 
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources: 
   - ../../base
-patches:
+patchesStrategicMerge:
   - argocd-cm.yaml
   - argocd-dex-server.yaml
   - argocd-rbac-cm.yaml
